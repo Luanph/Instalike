@@ -1,7 +1,9 @@
 import express from 'express';
 import multer from 'multer';
 import cors from 'cors';
-import { listAllPosts, postNewPost, uploadImage, updateNewPost, validadeLoginUser, authenticateToken } from '../controllers/postsController.js';
+import validadeLoginUser from '../controllers/loginController.js';
+import authenticateToken from '../controllers/tokenController.js';
+import { listAllPosts, postNewPost, uploadImage, updateNewPost } from '../controllers/postsController.js';
 
 const corsOptions = {
     origin: 'http://localhost:8000',
