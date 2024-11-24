@@ -24,9 +24,9 @@ const routes = (app) => {
     app.use(cors(corsOptions));
     app.get('/posts', authenticateToken, listAllPosts);
     app.post('/login', validadeLoginUser);
-    app.post('/posts', postNewPost);
-    app.post('/posts/upload', upload.single('image'), uploadImage);
-    app.put('/posts/upload/:id', updateNewPost)
+    app.post('/posts', authenticateToken, postNewPost);
+    app.post('/posts/upload', authenticateToken, upload.single('image'), uploadImage);
+    app.put('/posts/upload/:id', authenticateToken, updateNewPost);
 };
 
 export default routes;

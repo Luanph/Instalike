@@ -76,23 +76,22 @@ export async function updateNewPost(req, res) {
 
 export async function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    console.log(authHeader);
     if (!authHeader) return res.status(401).json({"mensagem": "Header não fornecido"});
     const token = authHeader && authHeader.split(' ')[1];
-    console.log(token);
     if (!token) return res.status(401).json({ "mensagem": "Token não fornecido" });
-
-    let tokenIsValid, user;
     
+    let tokenIsValid, mensagem;
+
     try {
-        ({tokenIsValid, user} = await validadeToken(token));
+        ({ tokenIsValid, mensagem } = await validadeToken(token));
     } catch (err) {
         console.error("Ocorreu um erro ao validar o token: ", err)
         res.status(500).json({"mensagem": "Ocorreu um erro interno, contate o adm do sistema"});
     }
 
-    if (tokenIsValid) {
-        req.user = user;
-        next();
+    if (!tokenIsValid) {
+       return res.status(401).json({"mensagem": mensagem});
     }
+
+    next();
 };

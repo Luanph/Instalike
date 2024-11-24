@@ -53,9 +53,10 @@ export async function updatePost(id, post) {
 }
 
 export async function validadeToken(token) {
-  jwt.verify(token, SECRET_KEY, (err, user) => {
-    if (err) return {"tokenIsValid": false, "mensagem":"Token inválido ou expirado"};
-    console.log(`user: ${user}`)
-    return {"tokenIsValid": true, "user": user};
+  return new Promise((resolve) => {
+    jwt.verify(token, SECRET_KEY, (err) => {
+      if (err) return resolve({"tokenIsValid": false, "mensagem":"Token inválido ou expirado"}); 
+      resolve({"tokenIsValid": true});
+    });
   });
 };
