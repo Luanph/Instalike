@@ -1,6 +1,7 @@
 import fs from 'fs';
 import {getAllPosts, createNewPost, updatePost} from "../models/postsModel.js";
 import GenerateDescriptionWithGemini from '../services/serviceGemini.js';
+import saveLog from '../../logger.js';
 
 export async function listAllPosts(req, res) {
     const posts = await getAllPosts();
@@ -13,7 +14,7 @@ export async function postNewPost(req, res) {
         const postCriado = await createNewPost(newPost);
         res.status(201).json(postCriado);
     } catch (err) {
-        console.error(err.message);
+        await saveLog("Error", err.message)
         res.status(500).json({"Erro": "Falha ao processar requisição. "});
     };
 };
@@ -31,7 +32,7 @@ export async function uploadImage(req, res) {
         fs.renameSync(req.file.path, urlImagem);
         res.status(201).json(postCriado);
     } catch (err) {
-        console.error(err.message);
+        await saveLog("Error", err.message)
         res.status(500).json({"Erro": "Falha ao processar requisição. "});
     };
 };
@@ -51,7 +52,7 @@ export async function updateNewPost(req, res) {
         const postAtualizado = await updatePost(id, post);
         res.status(200).json(postAtualizado);
     } catch (err) {
-        console.error(err.message);
+        await saveLog("Error", err.message)
         res.status(500).json({"Erro": "Falha ao processar requisição. "});
     };
 };

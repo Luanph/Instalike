@@ -1,4 +1,5 @@
 import { createRequire } from "module";
+import saveLog from "../../logger";
 
 const require = createRequire(import.meta.url);
 const jwt = require("jsonwebtoken");
@@ -13,7 +14,8 @@ export default async function validadeLogin(user, password) {
         userIsAuth: 1,
         token,
       };
-    } catch {
+    } catch (err) {
+      await saveLog("Error", err.message)
       return {
         status: 500
       };
