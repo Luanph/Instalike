@@ -1,5 +1,5 @@
 import { createRequire } from "module";
-import saveLog from "../../logger";
+import saveLog from "../../logger.js";
 
 const require = createRequire(import.meta.url);
 const jwt = require("jsonwebtoken");

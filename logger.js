@@ -1,8 +1,6 @@
 import fs from 'fs';
 import conectarAoBanco from "./src/config/dbConfig.js";
 
-const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
-
 /**
  * Salva um evento de log na base de dados.
  * @param {string} level - Nível do log (e.g., 'info', 'warn', 'error').
@@ -10,6 +8,8 @@ const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
  */
 
 export default async function saveLog(level, message = {}) {
+  
+  const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
   const logEntry = {
     level,
     message,

@@ -1,5 +1,4 @@
 import validadeLogin from "../models/loginModel.js";
-import saveLog from '../../logger.js';
 
 export default async function validadeLoginUser(req, res) {
     const user = req.body.user;
@@ -9,7 +8,7 @@ export default async function validadeLoginUser(req, res) {
     if (status == 500) return res.status(status).json({ "mensagem": "Não foi possível gerar o token. Ocorreu um erro interno" });
 
     if (!userIsAuth) {
-        return res.status(status).json({ "mensagem": "Usuário ou senha incorretos." });
+        return res.status(status).json({"mensagem": "Usuário ou senha incorretos." });
     }
     res.status(status).json({token, "expireIn": "5min"});
 };

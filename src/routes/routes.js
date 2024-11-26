@@ -3,7 +3,7 @@ import multer from 'multer';
 import cors from 'cors';
 import validadeLoginUser from '../controllers/loginController.js';
 import authenticateToken from '../controllers/tokenController.js';
-import { listAllPosts, postNewPost, uploadImage, updateNewPost } from '../controllers/postsController.js';
+import { listAllPosts, listPost, postNewPost, uploadImage, updateNewPost, deletedPost } from '../controllers/postsController.js';
 
 const corsOptions = {
     origin: 'http://localhost:8000',
@@ -25,10 +25,12 @@ const routes = (app) => {
     app.use(express.json());
     app.use(cors(corsOptions));
     app.get('/posts', authenticateToken, listAllPosts);
+    app.get('/posts/:id', authenticateToken, listPost);
     app.post('/login', validadeLoginUser);
     app.post('/posts', authenticateToken, postNewPost);
     app.post('/posts/upload', authenticateToken, upload.single('image'), uploadImage);
     app.put('/posts/upload/:id', authenticateToken, updateNewPost);
+    app.delete('/posts/delete/:id', authenticateToken, deletedPost);
 };
 
 export default routes;
