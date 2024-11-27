@@ -1,10 +1,14 @@
 import fs from 'fs';
-import {getAllPosts, getOnePost, createNewPost, updatePost, deletedPostAsync} from "../models/postsModel.js";
+import {getAllPosts, getOnePost, createNewPost, updatePostAsync, deletedPostAsync} from "../models/postsModel.js";
 import GenerateDescriptionWithGemini from '../services/serviceGemini.js';
 
 export async function listAllPosts(req, res) {
-    const posts = await getAllPosts();
-    res.status(200).json(posts);
+    try {
+        const posts = await getAllPosts();
+        res.status(200).json(posts);
+    } catch {
+        res.status(501).json({"Erro": "Falha ao processar requisição."});
+    }
 };
 
 export async function listPost(req, res) {
@@ -19,11 +23,12 @@ export async function listPost(req, res) {
 
 export async function postNewPost(req, res) {
     const newPost = req.body;
+    if (!newPost) return res.status(401).json({"mensagem": "O corpo da requisição não foi enviado."});
     try {
         const postCriado = await createNewPost(newPost);
         res.status(201).json(postCriado);
     } catch (err) {
-        res.status(500).json({"Erro": "Falha ao processar requisição. "});
+        res.status(500).json({"Erro": "Falha ao processar requisição."});
     };
 };
 
@@ -40,23 +45,30 @@ export async function uploadImage(req, res) {
         fs.renameSync(req.file.path, urlImagem);
         res.status(201).json(postCriado);
     } catch (err) {
-        res.status(500).json({"Erro": "Falha ao processar requisição. "});
+        res.status(500).json({"Erro": "Falha ao processar requisição."});
     };
 };
 
 export async function updateNewPost(req, res) {
     const id = req.params.id;
+    const descricao = String(req.body.descricao);
+
+    if (!id) return res.status(401).json({"mensagem": "Id não informado"});
+
     const urlImage = `http://localhost:3000/${id}.png`;
     
     try {
-        const imageBuffer = fs.readFileSync(`uploads/${id}.png`)
-        const description = await GenerateDescriptionWithGemini(imageBuffer);
+        const imageBuffer = fs.readFileSync(`uploads/${id}.png`);
+        let descriptionWithGemini;
+        if (!descricao || descricao.trim() === '') {
+            descriptionWithGemini = String(await GenerateDescriptionWithGemini(imageBuffer));
+        }
         const post = {
             urlImagem: urlImage,
-            descricao: description,
+            descricao: descricao ? descricao : descriptionWithGemini,
             alt: req.body.alt
         }
-        const postAtualizado = await updatePost(id, post);
+        const postAtualizado = await updatePostAsync(id, post);
         res.status(200).json(postAtualizado);
     } catch (err) {
         res.status(500).json({"Erro": "Falha ao processar requisição."});
@@ -66,7 +78,7 @@ export async function updateNewPost(req, res) {
 export async function deletedPost(req, res) {
     const id = req.params.id;
 
-    if (!id) return res.status(401).json({"mensagem": "id não fornecido"});
+    if (!id) return res.status(401).json({"mensagem": "Id não informado"});
 
     try {
         const {status, mensagem} = await deletedPostAsync(id);

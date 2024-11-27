@@ -3,10 +3,9 @@ import { ObjectId } from "mongodb";
 import saveLog from "../../logger.js";
 import conectarAoBanco from "../config/dbConfig.js";
 
-const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
-
 export async function getAllPosts() {
   try {
+    const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
     const db = conexao.db("Imersao-instabytes");
     const colecao = db.collection("posts");
     return colecao.find().toArray();
@@ -23,8 +22,8 @@ export async function getAllPosts() {
 
 export async function getOnePost(id, searchInternal) {
 
-
   try {
+    const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
     const db = conexao.db("Imersao-instabytes");
     const colecao = db.collection("posts");
     const objectId = ObjectId.createFromHexString(id);
@@ -42,6 +41,8 @@ export async function getOnePost(id, searchInternal) {
 
 export async function createNewPost(newPost) {
   try {
+    
+    const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
     const db = conexao.db("Imersao-instabytes");
     const colecao = db.collection("posts");
     return colecao.insertOne(newPost);
@@ -50,8 +51,9 @@ export async function createNewPost(newPost) {
   }
 }
 
-export async function updatePost(id, post) {
+export async function updatePostAsync(id, post) {
   try {
+    const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
     const db = conexao.db("Imersao-instabytes");
     const colecao = db.collection("posts");
     const objectId = ObjectId.createFromHexString(id);
@@ -62,9 +64,11 @@ export async function updatePost(id, post) {
 };
 
 export async function deletedPostAsync(id) {
-
   const postExists = getOnePost(id, true);
+
   if (!postExists) return {"status": 401, "mensagem": "Post não encontrado"};
+
+  const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
   const db = conexao.db("Imersao-instabytes");
   const colecao = db.collection("posts");
   const objectId = ObjectId.createFromHexString(id);
